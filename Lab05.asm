@@ -31,9 +31,8 @@ main:                       ; jump here on reset
 
 	/* Additional Setup before Main Loop */
 
-    sbi PORTA, PORTA7       ; Pre-turn LED off (active low) by setting PORTA.7
-    ldi R16, (1<<DDA7)      ; set PORTA.7 pin as output via bit 7
-    out DDRA, R16           ; in PORTC's data direction register
+    LDI  R16,(1<<DDA7)		; Set the mask to make Port A.7 an output
+    OUT  DDRA,R16		; Load bitmask to PORTA register
     
 mainLoop:
     CBI  PORTA, PORTA7       ; turn BOOT LED on (active low) by clearing PORTA.7
