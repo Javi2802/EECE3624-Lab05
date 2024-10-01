@@ -37,7 +37,7 @@ main:                       ; jump here on reset
     sbi PORTC, PORTC3       ; turn LED off (active low) by setting PORTC.3
 
 mainLoop:
-    cbi PORTC, PORTC3       ; turn LED on (active low) by clearing PORTC.3
+    CBI  PORTA, PORTA7       ; turn BOOT LED on (active low) by clearing PORTA.7
 
     ; kill some time
     ldi R16, 40             ; R16 is outer loop counter
@@ -50,7 +50,7 @@ outer_loop1:
     dec R16                 ; decrement the outer loop counter (R16)
     brne outer_loop1        ; loop back if R16 isn't zero
 
-    sbi PORTC, PORTC3       ; turn LED off (active low) by setting PORTC.3
+    sbi PORTA, PORTA7       ; turn BOOT LED off (active low) by setting PORTA.7
 
     ; kill some more time
     ldi R16, 40             ; R16 is outer loop counter
