@@ -31,11 +31,10 @@ main:                       ; jump here on reset
 
 	/* Additional Setup before Main Loop */
 
-    ldi R16, (1<<DDC3)      ; set PORTC.3 pin as output via bit 3
-    out DDRC, R16           ; in PORTC's data direction register
-
-    sbi PORTC, PORTC3       ; turn LED off (active low) by setting PORTC.3
-
+    sbi PORTA, PORTA7       ; Pre-turn LED off (active low) by setting PORTA.7
+    ldi R16, (1<<DDA7)      ; set PORTA.7 pin as output via bit 7
+    out DDRA, R16           ; in PORTC's data direction register
+    
 mainLoop:
     CBI  PORTA, PORTA7       ; turn BOOT LED on (active low) by clearing PORTA.7
 
