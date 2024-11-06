@@ -1,5 +1,5 @@
 
-AVRASM ver. 2.2.8  C:\Users\javie\Documents\EECE3624-Labs-24-25A\Lab02\EECE3624-Lab05\Lab05.asm Tue Oct 08 12:46:01 2024
+AVRASM ver. 2.2.8  C:\Users\javie\Documents\EECE3624-Labs-24-25A\Lab02\EECE3624-Lab05\Lab05Micah.asm Tue Oct 08 15:51:44 2024
 
 [builtin](2): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.7.374\avrasm\inc\m128adef.inc'
 [builtin](2): Including file 'C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.7.374\avrasm\inc\m128adef.inc'
@@ -1229,161 +1229,129 @@ AVRASM ver. 2.2.8  C:\Users\javie\Documents\EECE3624-Labs-24-25A\Lab02\EECE3624-
                                   *   Created: 02/19/2021
                                   * Processor: ATmega128A (on the ReadyAVR board)
                                   *
-                                  * Modified by: Javier Gutierrez
-                                  * Modified on: 10/07/2024
+                                  * Modified by: <Your name goes here>
+                                  * Modified on: <Date modified goes here>
                                   *
-                                  * This program blinks the “BOOT” LED (connected to PORTA.7) at a rate of 1 
-                                  to 15 Hz. This is adjustable in 15 steps, as the joystick is toggled up (faster) or down
-                                 (slower), and that the blink rate is displayed in 4-bit binary on LEDs 0-3, which
-                                 are connected to PORTC.0 (LSB) through PORTC.3 (MSB).
-                                 
-                                 The blink rate and the display only update after the joystick is released
-                                  *
+                                  * This program blinks the BOOT LED at a rate of 1-15Hz
+                                  * adjustable in 15 steps using the joystick by toggling
+                                  * up and down for faster and slower frequencies respectively.
+                                  * The blink rate is displayed using LEDs o-3 as a binary 
+                                  * blink counter
                                   *************************************************************************/
-                                  .def BlinkFreq = R20		; holds current blink rate (1-15 Hz)
-                                 .equ BlinkFreqMin = 1		; Minimum Blink Frequency 1 Hz
-                                 .equ BlinkFreqMax = 15		; Maximum Blink Frequency 15 Hz
-                                 .equ InitialBlinkFreq = BlinkFreqMin
                                  
-                                 .org 0x0000                 ; next instruction address is 0x0000
-000000 c008                      	rjmp main				; Jump to the main and allow reset to run this program
-                                 .org 0x0004					; next instruction address is 0x0004
-                                 ;This is the program adress of the External Interrupt 1
-000004 c03a                      	RJMP ISRJoystickDown		; Jymp to ISR subroutine when Joystick is pressed down
-                                 .org 0x0008					; next instruction address is 0x0008
-                                 ;This is the program address of the External Interrupt 3
-000008 c02c                      	RJMP ISRJoystickUp		; Jump to ISR subroutine when Joystick is pressed up
-                                 
-                                 /**********
-                                 * Main code setup
-                                 **********/
-                                 
-                                 main:                       ; jump here on reset
-000009 e100                          ldi R16, HIGH(RAMEND)   ; initialize stack (default RAMEND = 0x10FF)
-00000a bf0e                          out SPH, R16
-00000b ef0f                          ldi R16, low(RAMEND)
-00000c bf0d                          out SPL, R16
-                                 
-                                 	/* Additional Setup before Main Loop */
-00000d e800                      	ldi R16, (1<<DDA7)
-                                 	; set PORTA.7 pin as output via bit 7 and PORTC3:0 pins as output via bit 3,2,1,0
-00000e bb0a                          out DDRA, R16           ; in PORTA's data direction register
-                                 
-                                 	; Using DDRC set pins 3:0 as outputs (blink rate LEDs)
-00000f e00f                      	ldi R16, (1<<DDC3)|(1<<DDC2)|(1<<DDC1)|(1<<DDC0)		;
-000010 bb04                      	out DDRC, R16			; in PORTC's data direction register
-                                 
-000011 9adf                      	sbi PORTA, PORTA7		; turn BOOT off (active low) by setting PORTA.7
-                                 	; Initialize PORTC3:0 as output
-000012 e00f                      	ldi R16, (1<<PORTC3) | (1<<PORTC2) | (1<<PORTC1)| (1<<PORTC0)
-000013 bb05                      	out PORTC, R16			
-                                 
-                                 	; Using DDRB, set pins 1 and 3 as inputs (up/down joystick)
-                                 	; enable internal pull-up resistors on PORTB pins 1 and 3 (active low)
-000014 e000                      	ldi R16, 0
-000015 bb07                      	out DDRB, R16
-000016 e00a                      	ldi R16, (1<< PORTB1) | (1<<PORTB3)
-000017 bb08                      	out PORTB, R16
-                                 
-                                 	; Using DDRD  set pins 1 and 3 as inputs (to trigger ISRs):
-000018 e000                      	ldi R16, 0
-000019 bb01                      	out DDRD, R16
-                                 
-                                 	; Initally the Blink Frequency will be display
-                                 	; This frequency will be updated only when the joystick is pressed up or down
-                                 	; initialize the Blink Frequency
-00001a e041                      	ldi BlinkFreq, InitialBlinkFreq
-                                 /*********
+                                  /*********
                                   * Interrupt Jump Table
                                   *********/
-00001b e808                      	ldi R16, (1<<ISC11) | (0<<ISC10)| (1<<ISC31) | (0<<ISC30);  set INT1 and INT3 to activate on FALLING edge
-00001c 9300 006a                 	sts EICRA, R16						; EICRA instruction configuration
-00001e e00a                      	ldi R16, (1<<INT1) | (1<<INT3)		;  allow INT1 and INT3 to generate interrupts
-00001f bf09                      	out EIMSK, R16						; EIMSK instruction configuration
-000020 9478                      	sei									; Allow ISRs to be interrupted by setting the interrupts
+                                 .org 0x0000                 ; next instruction address is 0x0000
+                                                             ; (the location of the reset vector)
+000000 c01f                      rjmp main					; allow reset to run this program
                                  
-                                 	 /*********
-                                  * Main Code
-                                  *********/
+                                 .org 0x0004					; location of INT request 1
+000004 940c 004c                 jmp int1_isr
+                                 
+                                 .org 0x0008					; location of INT request 2
+000008 940c 0053                 jmp int3_isr
+                                 
+                                 
+                                 /**********
+                                 * Main code
+                                 **********/
+                                 .org 0x0020					; Move the "main" to 0x0020 to make room for ISRs
+                                 main:                       ; jump here on reset
+000020 e100                          ldi R16, HIGH(RAMEND)   ; initialize stack (default RAMEND = 0x10FF)
+000021 bf0e                          out SPH, R16
+000022 ef0f                          ldi R16, low(RAMEND)
+000023 bf0d                          out SPL, R16
+                                 
+                                 	/* Additional Setup before Main Loop */
+                                 
+                                 	.def BlinkFreq = R20 ; holds current blink rate (1-15 Hz)
+                                 	.equ BlinkFreqMin = 1
+                                 	.equ BlinkFreqMax = 15
+                                 	.equ InitialBlinkFreq = BlinkFreqMin
+                                 
+000024 e041                      	ldi BlinkFreq, InitialBlinkFreq
+                                 
+000025 e800                          ldi R16, (1<<DDA7)      ; set PORTA.7 pin as output via bit 7 **PROVIDED
+000026 bb0a                          out DDRA, R16           ; in PORTA's data direction register  **PROVIDED
+                                 
+000027 9adf                          sbi PORTA, PORTA7       ; turn LED off (active low) by setting PORTA.7 **PROVIDED
+                                 
+                                 
+                                 	;set data directions and register elements
+                                 
+000028 e000                      	ldi R16, 0x0				;set R16 to 0
+000029 b307                      	in R16, DDRB		;set Port B as input
+00002a b301                      	in R16, DDRD			;set Port D as input
+                                 
+00002b ef0f                      	ldi R16, 0xFF
+00002c bb04                      	out DDRC, R16			; set Port C as output
+00002d bb08                      	out PORTB, R16			; enable pull up registers on PORTB
+00002e bb02                      	out portd, r16
+                                 	
+00002f e000                      	ldi R16, 0
+000030 bb05                      	out PORTC, R16				
+                                 
+000031 ec0c                      	ldi R16, ( (1<<ISC10) | (1<<ISC11) | (1<<ISC30) | (1<<ISC31) )   ; set interrupt 3 activation on rising edge
+000032 9300 006a                 	sts EICRA, R16
+                                 
+000034 e00a                      	ldi R16, ((1<<INT1) | (1 << INT3))
+000035 bf09                      	out EIMSK, R16		;enable external interrupts
+                                 
+000036 9478                      	sei
                                  mainLoop:
-000021 98df                          cbi PORTA, PORTA7		; turn BOOT on (active low) by clearing PORTA.7
-                                 	; kill some time
-                                      ; Calculate delay based on BlinkFreq (16 - BlinkFreq)
-000022 e100                          ldi R16, 0x10           ; Start with a base value
-000023 1b04                          sub R16, BlinkFreq      ; Subtract the BlinkFreq to adjust delay
-                                     ; Set up the outer loop counter
-000024 e010                      	ldi R17, 0
-                                 outer_loop1:
-000025 ef8f                          ldi R24, low(0xFFFF)     ; load low and high parts of R25:R24 pair with
-000026 ef9f                          ldi R25, high(0xFFFF)    ; loop count by loading registers separately
-                                     inner_loop1:
-000027 9701                              sbiw R24, 1         ; decrement inner loop counter (R25:R24 pair)
-000028 f7f1                              brne inner_loop1    ; loop back if R25:R24 isn't zero
-000029 950a                          dec R16                 ; decrement the outer loop counter (R16)
-00002a f7d1                          brne outer_loop1        ; loop back if R16 isn't zero
+000037 98df                          cbi PORTA, PORTA7       ; turn LED on (active low) by clearing PORTC.7
                                  
-00002b 9adf                          sbi PORTA, PORTA7       ; turn LED off (active low) by setting PORTA.7
+000038 e110                      	ldi R17, 16
+000039 1b14                      	sub R17, BlinkFreq
+00003a 2f01                          mov R16, R17			 ; R16 is outer loop counter
+                                 outer_loop1:
+00003b ef8f                          ldi R24, low(0xFFFF)     ; load low and high parts of R25:R24 pair with
+00003c ef9f                          ldi R25, high(0xFFFF)    ; loop count by loading registers separately
+                                     inner_loop1:
+00003d 9701                              sbiw R24, 1         ; decrement inner loop counter (R25:R24 pair)
+00003e f7f1                              brne inner_loop1    ; loop back if R25:R24 isn't zero
+00003f 950a                          dec R16                 ; decrement the outer loop counter (R16)
+000040 f7d1                          brne outer_loop1        ; loop back if R16 isn't zero
+                                 
+000041 9adf                          sbi PORTA, PORTA7       ; turn LED off (active low) by setting PORTC.3
                                  
                                      ; kill some more time
-                                      ; Calculate delay based on BlinkFreq
-00002c e100                          ldi R16, 0x10           ; Start with a base value
-00002d 1b04                          sub R16, BlinkFreq      ; Subtract the BlinkFreq to adjust delay
-                                     ; Set up the outer loop counter
+000042 e110                          ldi R17, 16
+000043 1b14                      	sub R17, BlinkFreq
+000044 2f01                          mov R16, R17		         ; R16 is outer loop counter
                                  outer_loop2:
-00002e ef8f                          ldi R24, low(0xFFFF)     ; load low and high parts of R25:R24 pair with
-00002f ef9f                          ldi R25, high(0xFFFF)    ; loop count by loading registers separately
+000045 ef8f                          ldi R24, low(0xFFFF)     ; load low and high parts of R25:R24 pair with
+000046 ef9f                          ldi R25, high(0xFFFF)    ; loop count by loading registers separately
                                      inner_loop2:
-000030 9701                              sbiw R24, 1         ; decrement inner loop counter (R25:R24 pair)
-000031 f7f1                              brne inner_loop2    ; loop back if R25:R24 isn't zero
-000032 950a                          dec R16                 ; decrement the outer loop counter (R16)
-000033 f7d1                          brne outer_loop2        ; loop back if R16 isn't zero
-000034 cfec                          rjmp mainLoop           ; play it again, Sam...
-                                 
+000047 9701                              sbiw R24, 1         ; decrement inner loop counter (R25:R24 pair)
+000048 f7f1                              brne inner_loop2    ; loop back if R25:R24 isn't zero
+000049 950a                          dec R16                 ; decrement the outer loop counter (R16)
+00004a f7d1                          brne outer_loop2        ; loop back if R16 isn't zero
+00004b cfeb                          rjmp mainLoop           ; play it again, Sam...
                                  
                                  /**********
                                  * ISR code
                                  **********/
-                                 ; This subroutine starts on the falling edge when the joystick button is pressed up
-                                 ; This increments the blink rate
-                                 ISRJoystickUp: 
-000035 9a09                      	sbi PORTD1, 1	; PORTD1 pull-up activated
-000036 9a19                      	sbi PORTD3, 1	; PORTD3 pull-up activated
-000037 304f                      	CPI BlinkFreq, BlinkFreqMax		; Compare the Blink Frequency with the max Blink Frequency
-000038 f004                      	BRLT lessthan	; Branch if the Blink Frequency is less than the max Blink Frequency
-                                 lessthan: 
-000039 9543                      	INC BlinkFreq		; Increment Blink Frequency
-00003a 2f14                      	MOV R17, BlinkFreq	; Move the Blink Frequency value to a temporary Register R17
-00003b e02f                      	LDI R18, 0x0F		; Load the inmediate value 00001111 in temporary Register 17
-                                 	;This is done for toggling Port PC3:0
-00003c 2712                      	EOR R17, R18		; XOR the values in register R17 and R18
-00003d bb15                      	OUT PORTC, R17		; Send the information to PORTC to toggle it
-00003e 9518                      	RETI				; Return Interrupt
-                                 	; The “I” bit is set when RETI is executed
+                                 int1_isr:							;interrupt servicing the down input
+00004c 3041                      cpi BlinkFreq, BlinkFreqMin
+00004d f01c                      brlt freq1
+00004e 5041                      subi BlinkFreq, 1
+00004f bb45                      out PORTC, BlinkFreq
+000050 9518                      reti
+                                 freq1:
+000051 e041                      ldi BlinkFreq, 1
+000052 9518                      reti
                                  
-                                 ISRJoystickDown:
-                                 ; This subroutine starts on the falling edge when the joystick button is pressed down
-                                 ; This decrements the blink rate
-00003f 9a09                      	sbi PORTD1, 1	; PORTD1 pull-up activated
-000040 9a19                      	sbi PORTD3, 1	; PORTD3 pull-up activated
-000041 304f                      	CPI BlinkFreq, BlinkFreqMax		; Compare the Blink Frequency with the max Blink Frequency
-000042 f400                      	BRSH greaterthan	; Branch if the Blink Frequency is greater than the max Blink Frequency
-                                 greaterthan: 
-000043 954a                      	DEC BlinkFreq		; Decrement Blink Frequency
-000044 2f14                      	MOV R17, BlinkFreq	; Move the Blink Frequency value to a temporary Register R17
-000045 e02f                      	LDI R18, 0x0F		; Load the inmediate value 00001111 in temporary Register 17
-                                 	;This is done for toggling Port PC3:0
-000046 2712                      	EOR R17, R18		; XOR the values in registers 
-                                 	; Send the information to PORTC to toggle it
-000047 bb15                      	OUT PORTC, R17		; Send the information to PORTC to toggle it
-000048 9518                      	RETI				; Return Interrupt
-                                 	; The “I” bit is set when RETI is executed
-                                 	
-                                 
-                                 
-                                 
-                                 
-                                 
-                                 
+                                 int3_isr:							;interrupt servicing the up input
+000053 304f                      cpi BlinkFreq, BlinkFreqMax
+000054 f420                      brsh freq15
+000055 e061                      ldi R22, 1
+000056 0f46                      add BlinkFreq, R22
+000057 bb45                      out PORTC, BlinkFreq
+000058 9518                      reti
+                                 freq15:
+000059 e04f                      ldi BlinkFreq, 15
 
 
 RESOURCE USE INFORMATION
@@ -1403,13 +1371,13 @@ counted separately from r26..r31 here.
 "ATmega128A" register use summary:
 x  :   0 y  :   0 z  :   0 r0 :   0 r1 :   0 r2 :   0 r3 :   0 r4 :   0 
 r5 :   0 r6 :   0 r7 :   0 r8 :   0 r9 :   0 r10:   0 r11:   0 r12:   0 
-r13:   0 r14:   0 r15:   0 r16:  26 r17:   7 r18:   4 r19:   0 r20:   9 
-r21:   0 r22:   0 r23:   0 r24:   4 r25:   2 r26:   0 r27:   0 r28:   0 
+r13:   0 r14:   0 r15:   0 r16:  23 r17:   6 r18:   0 r19:   0 r20:  11 
+r21:   0 r22:   2 r23:   0 r24:   4 r25:   2 r26:   0 r27:   0 r28:   0 
 r29:   0 r30:   0 r31:   0 
 Registers used: 6 out of 35 (17.1%)
 
 "ATmega128A" instruction use summary:
-.lds  :   0 .sts  :   0 adc   :   0 add   :   0 adiw  :   0 and   :   0 
+.lds  :   0 .sts  :   0 adc   :   0 add   :   1 adiw  :   0 and   :   0 
 andi  :   0 asr   :   0 bclr  :   0 bld   :   0 brbc  :   0 brbs  :   0 
 brcc  :   0 brcs  :   0 break :   0 breq  :   0 brge  :   0 brhc  :   0 
 brhs  :   0 brid  :   0 brie  :   0 brlo  :   0 brlt  :   1 brmi  :   0 
@@ -1417,24 +1385,24 @@ brne  :   4 brpl  :   0 brsh  :   1 brtc  :   0 brts  :   0 brvc  :   0
 brvs  :   0 bset  :   0 bst   :   0 call  :   0 cbi   :   1 cbr   :   0 
 clc   :   0 clh   :   0 cli   :   0 cln   :   0 clr   :   0 cls   :   0 
 clt   :   0 clv   :   0 clz   :   0 com   :   0 cp    :   0 cpc   :   0 
-cpi   :   2 cpse  :   0 dec   :   3 elpm  :   0 eor   :   2 fmul  :   0 
-fmuls :   0 fmulsu:   0 icall :   0 ijmp  :   0 in    :   0 inc   :   1 
-jmp   :   0 ld    :   0 ldd   :   0 ldi   :  20 lds   :   0 lpm   :   0 
+cpi   :   2 cpse  :   0 dec   :   2 elpm  :   0 eor   :   0 fmul  :   0 
+fmuls :   0 fmulsu:   0 icall :   0 ijmp  :   0 in    :   2 inc   :   0 
+jmp   :   2 ld    :   0 ldd   :   0 ldi   :  18 lds   :   0 lpm   :   0 
 lsl   :   0 lsr   :   0 mov   :   2 movw  :   0 mul   :   0 muls  :   0 
-mulsu :   0 neg   :   0 nop   :   0 or    :   0 ori   :   0 out   :  11 
-pop   :   0 push  :   0 rcall :   0 ret   :   0 reti  :   2 rjmp  :   4 
-rol   :   0 ror   :   0 sbc   :   0 sbci  :   0 sbi   :   6 sbic  :   0 
+mulsu :   0 neg   :   0 nop   :   0 or    :   0 ori   :   0 out   :  10 
+pop   :   0 push  :   0 rcall :   0 ret   :   0 reti  :   4 rjmp  :   2 
+rol   :   0 ror   :   0 sbc   :   0 sbci  :   0 sbi   :   2 sbic  :   0 
 sbis  :   0 sbiw  :   2 sbr   :   0 sbrc  :   0 sbrs  :   0 sec   :   0 
 seh   :   0 sei   :   1 sen   :   0 ser   :   0 ses   :   0 set   :   0 
 sev   :   0 sez   :   0 sleep :   0 spm   :   0 st    :   0 std   :   0 
-sts   :   1 sub   :   2 subi  :   0 swap  :   0 tst   :   0 wdr   :   0 
+sts   :   1 sub   :   2 subi  :   1 swap  :   0 tst   :   0 wdr   :   0 
 
-Instructions used: 18 out of 114 (15.8%)
+Instructions used: 20 out of 114 (17.5%)
 
 "ATmega128A" memory use summary [bytes]:
 Segment   Begin    End      Code   Data   Used    Size   Use%
 ---------------------------------------------------------------
-[.cseg] 0x000000 0x000092    134      0    134  131072   0.1%
+[.cseg] 0x000000 0x0000b6    128      0    128  131072   0.1%
 [.dseg] 0x000100 0x000100      0      0      0    4096   0.0%
 [.eseg] 0x000000 0x000000      0      0      0    4096   0.0%
 

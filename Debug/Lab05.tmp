@@ -7,7 +7,7 @@
   <DIR>C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\avr8\avrassembler\Include</DIR>
   <DIR></DIR>
  </INCLUDE_PATH>
- <SOURCE_FILE>C:\Users\javie\Documents\EECE3624-Labs-24-25A\Lab02\EECE3624-Lab05\Lab05.asm</SOURCE_FILE>
+ <SOURCE_FILE>C:\Users\javie\Documents\EECE3624-Labs-24-25A\Lab02\EECE3624-Lab05\Lab05Micah.asm</SOURCE_FILE>
  <INCLUDED_FILES>
   <FILE>C:/Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.7.374\avrasm\inc\m128adef.inc</FILE>
  </INCLUDED_FILES>
@@ -22,15 +22,15 @@
   <FILE>Lab05.lss</FILE>
  </OUTPUT_FILES>
  <LABELS>
-  <main><FILE>C:\Users\javie\Documents\EECE3624-Labs-24-25A\Lab02\EECE3624-Lab05\Lab05.asm</FILE><LINE>37</LINE></main>
-  <ISRJoystickDown><FILE>C:\Users\javie\Documents\EECE3624-Labs-24-25A\Lab02\EECE3624-Lab05\Lab05.asm</FILE><LINE>139</LINE></ISRJoystickDown>
-  <ISRJoystickUp><FILE>C:\Users\javie\Documents\EECE3624-Labs-24-25A\Lab02\EECE3624-Lab05\Lab05.asm</FILE><LINE>124</LINE></ISRJoystickUp>
-  <mainLoop><FILE>C:\Users\javie\Documents\EECE3624-Labs-24-25A\Lab02\EECE3624-Lab05\Lab05.asm</FILE><LINE>84</LINE></mainLoop>
-  <outer_loop1><FILE>C:\Users\javie\Documents\EECE3624-Labs-24-25A\Lab02\EECE3624-Lab05\Lab05.asm</FILE><LINE>92</LINE></outer_loop1>
-  <inner_loop1><FILE>C:\Users\javie\Documents\EECE3624-Labs-24-25A\Lab02\EECE3624-Lab05\Lab05.asm</FILE><LINE>95</LINE></inner_loop1>
-  <outer_loop2><FILE>C:\Users\javie\Documents\EECE3624-Labs-24-25A\Lab02\EECE3624-Lab05\Lab05.asm</FILE><LINE>108</LINE></outer_loop2>
-  <inner_loop2><FILE>C:\Users\javie\Documents\EECE3624-Labs-24-25A\Lab02\EECE3624-Lab05\Lab05.asm</FILE><LINE>111</LINE></inner_loop2>
-  <lessthan><FILE>C:\Users\javie\Documents\EECE3624-Labs-24-25A\Lab02\EECE3624-Lab05\Lab05.asm</FILE><LINE>129</LINE></lessthan>
-  <greaterthan><FILE>C:\Users\javie\Documents\EECE3624-Labs-24-25A\Lab02\EECE3624-Lab05\Lab05.asm</FILE><LINE>146</LINE></greaterthan>
+  <main><FILE>C:\Users\javie\Documents\EECE3624-Labs-24-25A\Lab02\EECE3624-Lab05\Lab05Micah.asm</FILE><LINE>36</LINE></main>
+  <int1_isr><FILE>C:\Users\javie\Documents\EECE3624-Labs-24-25A\Lab02\EECE3624-Lab05\Lab05Micah.asm</FILE><LINE>112</LINE></int1_isr>
+  <int3_isr><FILE>C:\Users\javie\Documents\EECE3624-Labs-24-25A\Lab02\EECE3624-Lab05\Lab05Micah.asm</FILE><LINE>122</LINE></int3_isr>
+  <mainLoop><FILE>C:\Users\javie\Documents\EECE3624-Labs-24-25A\Lab02\EECE3624-Lab05\Lab05Micah.asm</FILE><LINE>78</LINE></mainLoop>
+  <outer_loop1><FILE>C:\Users\javie\Documents\EECE3624-Labs-24-25A\Lab02\EECE3624-Lab05\Lab05Micah.asm</FILE><LINE>84</LINE></outer_loop1>
+  <inner_loop1><FILE>C:\Users\javie\Documents\EECE3624-Labs-24-25A\Lab02\EECE3624-Lab05\Lab05Micah.asm</FILE><LINE>87</LINE></inner_loop1>
+  <outer_loop2><FILE>C:\Users\javie\Documents\EECE3624-Labs-24-25A\Lab02\EECE3624-Lab05\Lab05Micah.asm</FILE><LINE>99</LINE></outer_loop2>
+  <inner_loop2><FILE>C:\Users\javie\Documents\EECE3624-Labs-24-25A\Lab02\EECE3624-Lab05\Lab05Micah.asm</FILE><LINE>102</LINE></inner_loop2>
+  <freq1><FILE>C:\Users\javie\Documents\EECE3624-Labs-24-25A\Lab02\EECE3624-Lab05\Lab05Micah.asm</FILE><LINE>118</LINE></freq1>
+  <freq15><FILE>C:\Users\javie\Documents\EECE3624-Labs-24-25A\Lab02\EECE3624-Lab05\Lab05Micah.asm</FILE><LINE>129</LINE></freq15>
  </LABELS>
 </ASSEMBLER_INFO>

@@ -33,7 +33,7 @@ The blink rate and the display only update after the joystick is released
 /**********
 * Main code setup
 **********/
-
+.org 0x0020					; Move the "main" to 0x0020 to make room for ISRs
 main:                       ; jump here on reset
     ldi R16, HIGH(RAMEND)   ; initialize stack (default RAMEND = 0x10FF)
     out SPH, R16
@@ -45,7 +45,6 @@ main:                       ; jump here on reset
 	; set PORTA.7 pin as output via bit 7 and PORTC3:0 pins as output via bit 3,2,1,0
     out DDRA, R16           ; in PORTA's data direction register
 
-<<<<<<< HEAD
 	; Using DDRC set pins 3:0 as outputs (blink rate LEDs)
 	ldi R16, (1<<DDC3)|(1<<DDC2)|(1<<DDC1)|(1<<DDC0)		;
 	out DDRC, R16			; in PORTC's data direction register
@@ -90,16 +89,6 @@ mainLoop:
     sub R16, BlinkFreq      ; Subtract the BlinkFreq to adjust delay
     ; Set up the outer loop counter
 	ldi R17, 0
-=======
-    LDI  R16,(1<<DDA7)		; Set the mask to make Port A.7 an output
-    OUT  DDRA,R16		; Load bitmask to PORTA register
-    
-mainLoop:
-    CBI  PORTA, PORTA7       ; turn BOOT LED on (active low) by clearing PORTA.7
-
-    ; kill some time
-    ldi R16, 40             ; R16 is outer loop counter
->>>>>>> 8fd4e8df7010a85ea5af782ee124776965b495d1
 outer_loop1:
     ldi R24, low(0xFFFF)     ; load low and high parts of R25:R24 pair with
     ldi R25, high(0xFFFF)    ; loop count by loading registers separately
@@ -109,11 +98,7 @@ outer_loop1:
     dec R16                 ; decrement the outer loop counter (R16)
     brne outer_loop1        ; loop back if R16 isn't zero
 
-<<<<<<< HEAD
     sbi PORTA, PORTA7       ; turn LED off (active low) by setting PORTA.7
-=======
-    sbi PORTA, PORTA7       ; turn BOOT LED off (active low) by setting PORTA.7
->>>>>>> 8fd4e8df7010a85ea5af782ee124776965b495d1
 
     ; kill some more time
      ; Calculate delay based on BlinkFreq
@@ -134,7 +119,6 @@ outer_loop2:
 /**********
 * ISR code
 **********/
-<<<<<<< HEAD
 ; This subroutine starts on the falling edge when the joystick button is pressed up
 ; This increments the blink rate
 ISRJoystickUp: 
@@ -176,7 +160,3 @@ greaterthan:
 
 
 
-=======
-.org 0x0200							; Load the ISR code higher than main code
-int1_isr:
->>>>>>> 8fd4e8df7010a85ea5af782ee124776965b495d1
